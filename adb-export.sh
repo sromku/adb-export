@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
+# author: Roman Kushnarenko @sromku
+# license: Apache License 2.0
 
 # steps:
 # 1. query via adb and export the output to file
-# 2. import the raw data
-# 3. break to rows
-# 4. write each transformed row to csv
-
+# 2. import the raw data & break to rows
+# 3. write each transformed row to csv
 
 # ============ GENERAL PARAMS =============
-DEBUG=true
+DEBUG=false
 REPLACE_VALUE_COMMAS_TO=" "
 
+# currently for tests
 EVENTS_URI="content://com.android.calendar/events"
 
+echo ""
+echo "Exporting: $EVENTS_URI"
+echo "----------------------"
 
 # ========== CREATE WORKING DIR ===========
 rawQueryFile="raw_query.txt"
@@ -22,33 +26,34 @@ outputFileName="result.csv"
 > $outputFileName
 
 
-
 # ============== FUNCTIONS ================
 
 # find the first poistion of substring 
 # params: 
 #	- string we look in
 #	- string we look for
-# output:
+# return:
 #	- position of the first occurance
 strindex() { 
 	x="${1%%$2*}"
 	[[ $x = $1 ]] && echo -1 || echo ${#x}
 }
 
+# text with spin animation
 spinner() {
-	echo $1
+	# echo $1
     local pid=$!
-    local delay=0.1
+    local delay=0.05
     local spinstr='|/-\'
     while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
         local temp=${spinstr#?}
-        printf " [%c]  " "$spinstr"
+        toPrint=$(printf "[%c]  " "$spinstr")
+        echo -ne " - $1: $toPrint \r"
         local spinstr=$temp${spinstr%"$temp"}
         sleep $delay
-        printf "\b\b\b\b\b\b"
     done
-    printf "    \b\b\b\b"
+    echo -ne " - $1: Done"
+    echo ""
 }
 
 # convert android row to csv row
@@ -72,19 +77,11 @@ toCsv() {
 	# count number of fields
 	i=0
 
-	# remove all "," and convert 
 	row=$1
-	# row=$(tr "," "$REPLACE_VALUE_COMMAS_TO" <<< "$1")
-
 	for item in $row
 	do
-		# echo $item
-
 		# skip the first two (they will be Row\n<number>)
 		if [ $i -eq 0 -o $i -eq 1 ]; then
-			if [ $i -eq 1 ]; then
-				echo $item
-			fi
 			let "i+=1"
 			continue
 		fi
@@ -163,11 +160,15 @@ toCsv() {
 
 }
 
-# containsElement () {
-#   local e
-#   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
-#   return 1
-# }
+# give the percentage number
+# params:
+#	- part number
+#	- total number
+# return:
+#	- the percentage
+percent() {
+	echo $(printf '%i %i' $1 $2 | awk '{ pc=100*$1/$2; i=int(pc); print (pc-i<0.5)?i:i+1 }')
+}
 
 # ========== RUN ADB CONENT CMD ===========
 
@@ -177,6 +178,7 @@ dbquery() {
 	" > $rawQueryFile
 }
 
+# wait and show some spinner
 (dbquery) &
 spinner "Querying DB"
 
@@ -185,15 +187,25 @@ spinner "Querying DB"
 # prepare all rows in this array
 declare -a rows
 
-# rows counter
-count=-1
+# number of lines
+
+numOfLines=$(wc -l < "$rawQueryFile")
+readLines=0
 
 # let's read line be line and build rows
+count=-1
 while read -r line
 do
+	# print
+	let "readLines+=1"
+	percentage=$(percent "$readLines" "$numOfLines")
+	toPrint=$(printf " - Reading DB raw data: %d" "$percentage")
+	echo -ne "$toPrint% \r"
+
 	# it works as follow:
-	# - we check if row starts with 'Row:', then we can assume that this is a new row (not pretty bad assumtion after many tests)
+	# - we check if row starts with 'Row:', then we can assume that this is a new row (it's pretty NOT bad assumtion)
 	# - the line that doesn't start with 'Row:' is something that contains fields and data whuch are belong to previous row
+	# ref: https://android.googlesource.com/platform/frameworks/base/+/cd92588/cmds/content/src/com/android/commands/content/Content.java
 
 	# the position of 'Row:' in the line
     index=$(strindex "$line" "Row:")
@@ -205,19 +217,31 @@ do
     	# this is still the previous row
     	rows[$count]+=$(printf "%s" "$line")
     fi
-done < "$rawQueryFile" 
-# spinner "Reading rows"
 
+done < "$rawQueryFile" 
+
+# parse and write to csv
+numOfRows=${#rows[@]}
+readLines=0
+echo ""
 for i in "${!rows[@]}"
 do
+
+	# print
+	let "readLines+=1"
+	percentage=$(percent "$readLines" "$numOfRows")
+	toPrint=$(printf " - Parsing and writing to CSV ($readLines/$numOfRows): %d" "$percentage")
+	echo -ne "$toPrint% \r"
+
 	# for each row export to CSV
 	toCsv "${rows[i]}" $(if [ $i -eq 0 ]; then echo "true"; else echo "false"; fi)
-	
+
 done 
-# spinner "Writing to CSV"
+echo ""
 
 # export results
+echo "----------------------"
 echo "Result:"
-echo $(printf "Num of rows: %d" "${#rows[@]}")
-
+echo $(printf "Num of exported rows: %d" "$numOfRows")
+echo ""
 
