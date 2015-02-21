@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # steps:
 # 1. query via adb and export the output to file
 # 2. import the raw data
@@ -15,16 +14,13 @@ REPLACE_VALUE_COMMAS_TO=" "
 EVENTS_URI="content://com.android.calendar/events"
 
 
-
-
 # ========== CREATE WORKING DIR ===========
-outputFileName="result.csv"
+rawQueryFile="raw_query.txt"
+> $rawQueryFile
 
-# clean the file
+outputFileName="result.csv"
 > $outputFileName
 
-
-file="raw_query.txt"
 
 
 # ============== FUNCTIONS ================
@@ -82,6 +78,8 @@ toCsv() {
 
 	for item in $row
 	do
+		# echo $item
+
 		# skip the first two (they will be Row\n<number>)
 		if [ $i -eq 0 -o $i -eq 1 ]; then
 			if [ $i -eq 1 ]; then
@@ -92,10 +90,11 @@ toCsv() {
 		fi
 
 		# if last char is "," then we have valid key=value
-		keyValue=$(printf "%s" "${keyValue}${item}")
+		keyValue=$(printf "%s" "${keyValue} ${item}")
 		lastChar="${item: -1}"
 		if [ $lastChar = "," ]; then
-			let "i+=1"
+			keyValue=$(tr "," "$REPLACE_VALUE_COMMAS_TO" <<< "${keyValue%?}")
+			keyValue+=","
 			next=true 
 		fi
 
@@ -104,14 +103,17 @@ toCsv() {
 
 			# fetch the column & value
 			position=$(strindex "$keyValue" "=")
-			if [ $position -eq -1 ]; then
+			# this is another assumtion, that column name can't be more than 30 lenght
+			if [ $position -eq -1 -o $position -gt 30 ]; then
 				# yes, it may happen and we will need to take this one and update the previous value
-
-				let "i-=1"
-				# echo $keyValue
-				# values[$i]="${values[i]}$keyValue"
-				# echo ${values[i]}
+				lastPosition=${#values[@]}-1
+				# add to previous one
+				values[$lastPosition]=$(printf "%s" "${values[lastPosition]%?}${keyValue}")
+				next=false
+				keyValue=""
 				continue
+			else 
+				let "i+=1"
 			fi
 
 			column=${keyValue:0:position}
@@ -161,33 +163,22 @@ toCsv() {
 
 }
 
-containsElement () {
-  local e
-  for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
-  return 1
-}
+# containsElement () {
+#   local e
+#   for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+#   return 1
+# }
 
 # ========== RUN ADB CONENT CMD ===========
 
 dbquery() {
 	adb shell "
-	content query --uri content://com.android.calendar/events
-	" > $file
+	content query --uri $EVENTS_URI
+	" > $rawQueryFile
 }
-
-# start from 
-#aa=(adb shell content query --uri content://com.android.calendar/events --where "dtstart > '1424131251000' and dtend < '1424217651000'" ))
-
-#aa=(adb shell content query --uri content://com.android.calendar/events --where "allDay = 1 and dtstart > '1424044851000' and dtend < '1424304051000'" ))
-
-
-
-#echo `adb shell`
-#echo `content query --uri content://com.android.calendar/events --where "dtstart > '1424131251000' and dtend < '1424217651000'"`
 
 (dbquery) &
 spinner "Querying DB"
-
 
 # ============ EXPORT TO CSV ==============
 
@@ -214,7 +205,7 @@ do
     	# this is still the previous row
     	rows[$count]+=$(printf "%s" "$line")
     fi
-done < "$file" 
+done < "$rawQueryFile" 
 # spinner "Reading rows"
 
 for i in "${!rows[@]}"
