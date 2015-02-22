@@ -132,6 +132,7 @@ DIR=$(pwd)$'/'${SELECTED_URI#'content://'}$'-'$(timestamp)
 mkdir -p $DIR
 RAW_QUERY_FILE=$DIR$'/'$'raw_query.txt'
 OUTPUT_CSV=$DIR$'/'$'result.csv'
+STARTTIME=$(date +"%s")
 
 # ============== FUNCTIONS ================
 
@@ -345,10 +346,14 @@ do
 
 done 
 echo ""
-
+ENDTIME=$(date +"%s")
+executionTime=$(($ENDTIME-$STARTTIME))
+minutesPassed=$(($executionTime / 60))
+secondsPassed=$(($executionTime % 60))
 # export results
 echo "----------------------"
 echo "Result:"
 echo $(printf "Num of exported rows: %d" "$numOfRows")
+echo $(printf "Execution time: %s minutes and %s seconds" "$minutesPassed" "$secondsPassed")
 echo ""
 
