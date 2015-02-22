@@ -2,29 +2,136 @@
 # author: Roman Kushnarenko @sromku
 # license: Apache License 2.0
 
+uris=(
+	"content://com.android.calendar/calendars"
+	"content://com.android.calendar/events"
+	)
+
+description=(
+	"Calendars table, which contains details of all calendars."
+	"Events table, which contains details of all events."
+	)
+
+
+DEBUG=false
+REPLACE_VALUE_COMMAS_TO=" "
+SELECTED_URI=""
+
+printOptions() {
+options=""
+option=1
+for uri in ${uris[*]}
+do
+	options=$options$(printf "\n    %d      %s\n           %s" "$option" "$uri" "${description[option-1]}")$'\n'
+	let "option+=1"
+done
+
+cat <<EOF
+
+  Options:
+$options
+    -u     [uri] 
+           Set any content provider uri. see example on github.   
+
+  Examples:
+
+  - Export content provider: content://com.android.calendar/events
+    $ adb-export -o 2
+
+  - Export any content provider like this: content://com.my.super.app/passwords
+    $ adb-export -o -u content://com.my.super.app/passwords
+
+EOF
+}
+
+wrongInput() {
+cat <<EOF
+
+  Wrong option selection. Check for available options: adb-export -o
+
+EOF
+}
+
+# usage info
+usage() {
+cat <<EOF
+
+  Usage: adb-export [options] [arg]
+
+  Options:
+	-o      List of content provider and exporting options 
+	-h      This message
+
+EOF
+}
+
+if [ $# -eq 0 ]; then
+	usage;
+	exit 1
+fi
+
+# options with 
+if [ $# -eq 1 ]; then
+
+	if [ $1 == '-o' ]; then
+		printOptions;
+  		exit 1
+	fi
+
+  	usage;
+	exit 1
+fi
+
+# check one of standart options
+if [ $# -eq 2 ]; then
+
+	if [ $1 == '-o' ]; then
+
+		if [ $2 -gt 0 -a $2 -le ${#uris[@]} ]; then
+			# WE CAN START EXPORTING
+			SELECTED_URI=${uris[$2-1]}
+		else 
+			wrongInput;
+  			exit 1
+		fi
+
+	else 		
+		printOptions;
+		exit 1
+	fi
+	
+fi
+
+# check if custom one was selected
+if [ $SELECTED_URI=="" ]; then
+	if [ $# -eq 3 -a $1 == '-o' -a $2 == '-u' ]; then
+		SELECTED_URI=$3
+	else
+		wrongInput;
+	  	exit 1
+	fi
+fi
+
+# create output file
+timestamp() {
+  date +"%H-%M-%S"
+}
+
 # steps:
 # 1. query via adb and export the output to file
 # 2. import the raw data & break to rows
 # 3. write each transformed row to csv
 
 # ============ GENERAL PARAMS =============
-DEBUG=false
-REPLACE_VALUE_COMMAS_TO=" "
-
-# currently for tests
-EVENTS_URI="content://com.android.calendar/events"
 
 echo ""
-echo "Exporting: $EVENTS_URI"
-echo "----------------------"
+echo "Exporting: $SELECTED_URI"
 
 # ========== CREATE WORKING DIR ===========
-rawQueryFile="raw_query.txt"
-> $rawQueryFile
-
-outputFileName="result.csv"
-> $outputFileName
-
+DIR=$(pwd)$'/'${SELECTED_URI#'content://'}$'-'$(timestamp)
+mkdir -p $DIR
+RAW_QUERY_FILE=$DIR$'/'$'raw_query.txt'
+OUTPUT_CSV=$DIR$'/'$'result.csv'
 
 # ============== FUNCTIONS ================
 
@@ -148,15 +255,15 @@ toCsv() {
 		cols=${columns[*]}
 
 		# print to file
-		echo ${cols// /,} >> $outputFileName	
+		echo ${cols// /,} >> $OUTPUT_CSV
 	fi
 	
 	# print values with comma separated
 	vals=${values[*]}
 
 	# print to file end escape new lines
-	echo ${vals} | tr "\n\r" " " >> $outputFileName
-	echo -n $'\n' >> $outputFileName
+	echo ${vals} | tr "\n\r" " " >> $OUTPUT_CSV
+	echo -n $'\n' >> $OUTPUT_CSV
 
 }
 
@@ -174,8 +281,8 @@ percent() {
 
 dbquery() {
 	adb shell "
-	content query --uri $EVENTS_URI
-	" > $rawQueryFile
+	content query --uri $SELECTED_URI
+	" > $RAW_QUERY_FILE
 }
 
 # wait and show some spinner
@@ -189,7 +296,7 @@ declare -a rows
 
 # number of lines
 
-numOfLines=$(wc -l < "$rawQueryFile")
+numOfLines=$(wc -l < "$RAW_QUERY_FILE")
 readLines=0
 
 # let's read line be line and build rows
@@ -218,7 +325,7 @@ do
     	rows[$count]+=$(printf "%s" "$line")
     fi
 
-done < "$rawQueryFile" 
+done < "$RAW_QUERY_FILE" 
 
 # parse and write to csv
 numOfRows=${#rows[@]}
