@@ -1,5 +1,5 @@
 # adb-export
-Bash script that **exports** content provider's data to CSV. It can be your own content providers and any other providers that android decided not to block with permissions (and this is the [funny part](#the-funny-part---no-permissions-unlock))
+Bash script that **exports** content provider's data to raw and CSV format. It can be your own content provider or any other provider that android decided not to block with permissions (and this is the [funny part](#the-funny-part---no-permissions-unlock))
 
 ## Getting started
 
@@ -57,7 +57,7 @@ The result will be: *requires android.permission.READ_SMS*
 The result: CSV with all contacts<br>
 Which, btw, should also check for permissions, but it **doesn't**. :open_mouth:
 
-## Android content providers URIs
+## Android content providers URIs :unlock:
 If you discover some new that work, add them here
 
 #### Calendar
@@ -114,8 +114,8 @@ If you have successfully tested this script on others systems or platforms pleas
 
 ## Important things to know
 
-- Any commas in imported values are replaced to " " (space) char, since they don't play well in CSV format. You can configure it by changing `REPLACE_VALUE_COMMAS_TO` variable in the script
-- The output of the same android content provider on different devices can has different columns, thus the parsing steps try to understand what is the column and what is the value.
+- Any commas in imported values are replaced to " " (space) char, since they don't play well in CSV format. You can configure it by changing `REPLACE_VALUE_COMMAS_TO` variable in the script.
+- The table schema of the same android content provider on different devices can be different, thus the parsing steps try to understand what is the column and what is the value.
 - This is the first version, and if you find bad parsing outputs, please open an issue.
 - Use it only for good purposes!
 
