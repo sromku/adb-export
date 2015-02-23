@@ -242,11 +242,21 @@ do
     	let "count+=1"
     	rows[$count]=$(printf "%s" "$line")
     else 
+    	if [ $count -eq -1 ]; then
+    		# it means that we got some exception
+    		echo $line
+    		continue
+    	fi
     	# this is still the previous row
     	rows[$count]+=$(printf "%s" "$line")
     fi
 
 done < "$RAW_QUERY_FILE" 
+
+if [ $count -eq -1 ]; then
+	echo ""
+	exit 1
+fi
 
 # parse and write to csv
 numOfRows=${#rows[@]}
