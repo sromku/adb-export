@@ -109,6 +109,7 @@ If you discover some new that work, add them here
 ## Tested Environments (meanwhile)
 
 * MacOSX
+* Ubuntu 14.10 (Utopic). Run ```sudo apt-get install android-tools-adb``` first
 
 If you have successfully tested this script on others systems or platforms please let me know or update this list.
 
