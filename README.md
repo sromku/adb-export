@@ -1,18 +1,18 @@
 # adb-export
-Bash script that **exports** content provider's data to raw and CSV format. It can be your own content provider or any other provider that android decided not to block with permissions (and this is the [funny part](#the-funny-part---no-permissions-unlock))
+Bash script that **exports** content provider's data to raw and CSV format. It can be your own content provider or any other content provider that isn't blocked with permissions.
 
 ## Getting started
 
 First, clone the repository using git (recommended):
 
 ``` bash
-git clone https://github.com/sromku/adb-export/
+git clone https://github.com/snatik/adb-export/
 ```
 
 or download the script manually using this command:
 
 ``` bash
-curl "https://raw.githubusercontent.com/sromku/adb-export/master/adb-export.sh" -o adb-export.sh
+curl "https://raw.githubusercontent.com/snatik/adb-export/master/adb-export.sh" -o adb-export.sh
 ```
 
 Then give the execution permission to the script and run it:
@@ -44,7 +44,7 @@ The exported data will be in a new created folders with timestamps in the same r
  * `raw_query.txt` - this is what we exported from device
  * `data.csv` - this is what you need
 
-## The funny part - no permissions :unlock:
+## Permissions :unlock:
 
 There is a list of some android content providers that don't block the adb query. My expectation was that it wouldn't be possible because of lack of provider permissions. Just to be on the safe side, I opened a security vulnarability issue to **[Security Google Team](http://www.google.co.il/about/appsecurity/)** and got few replies where the last one says that this is not a security hole.
 
