@@ -93,7 +93,7 @@ If you discover some new that work, add them here
  * **[content://media/external/video/media](http://developer.android.com/reference/android/provider/MediaStore.Video.Media.html)**
  * **[content://media/external/video/thumbnails](http://developer.android.com/reference/android/provider/MediaStore.Video.Thumbnails.html)**
 
-> the `extrnal` in the uri, you can also change to `internal`
+> the `external` in the uri, you can also change to `internal`
 
 #### Settings
 
