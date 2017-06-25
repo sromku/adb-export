@@ -127,5 +127,5 @@ See [LICENSE](./LICENSE.md) for details.
 
 ## Follow us
 
-[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=https://github.com/snatikteam/adb-export)
+[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=https://github.com/snatik/adb-export)
 [![Twitter Follow](https://img.shields.io/twitter/follow/snatikteam.svg?style=social)](https://twitter.com/snatikteam)
