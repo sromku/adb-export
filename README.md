@@ -122,3 +122,9 @@ If you have successfully tested this script on others systems or platforms pleas
 
 ## License
 Apache License 2.0
+See [LICENSE](./LICENSE.md) for details.
+
+## Follow us
+
+[![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=https://github.com/snatikteam/adb-export)
+[![Twitter Follow](https://img.shields.io/twitter/follow/snatikteam.svg?style=social)](https://twitter.com/snatikteam)
