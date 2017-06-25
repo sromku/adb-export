@@ -122,6 +122,7 @@ If you have successfully tested this script on others systems or platforms pleas
 
 ## License
 Apache License 2.0
+
 See [LICENSE](./LICENSE.md) for details.
 
 ## Follow us
