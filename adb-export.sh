@@ -14,7 +14,7 @@ cat <<EOF
 
   Options:
 	-e [uri]  Export content provider uri to CSV. You can find nice list of uris
-	          on github: https://github.com/sromku/adb-export
+	          on github: https://github.com/snatik/adb-export
 	-h        This message
 
 EOF

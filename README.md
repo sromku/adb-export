@@ -62,49 +62,50 @@ If you discover some new that work, add them here
 
 #### Calendar
 
- * **[content://com.android.calendar/calendars](http://developer.android.com/reference/android/provider/CalendarContract.Calendars.html)**
- * **[content://com.android.calendar/events](http://developer.android.com/reference/android/provider/CalendarContract.Events.html)**
- * **[content://com.android.calendar/attendees](http://developer.android.com/reference/android/provider/CalendarContract.Attendees.html)**
- * **[content://com.android.calendar/reminders](http://developer.android.com/reference/android/provider/CalendarContract.Reminders.html)**
- * **[content://com.android.calendar/extendedproperties](http://developer.android.com/reference/android/provider/CalendarContract.ExtendedProperties.html)**
+ - content://com.android.calendar/calendars
+ - content://com.android.calendar/events
+ - content://com.android.calendar/attendees
+ - content://com.android.calendar/reminders
+ - content://com.android.calendar/extendedproperties
 
 #### Contacts
 
- * **[content://com.android.contacts/contacts](http://developer.android.com/reference/android/provider/CalendarContract.Calendars.html)**
- * **[content://com.android.contacts/directories](http://developer.android.com/reference/android/provider/ContactsContract.Directory.html)**
- * content://com.android.contacts/deleted_contacts
- * **[content://com.android.contacts/raw_contacts](http://developer.android.com/reference/android/provider/ContactsContract.RawContacts.html)**
- * **[content://com.android.contacts/data](http://developer.android.com/reference/android/provider/ContactsContract.Data.html)**
- * **[content://com.android.contacts/raw_contact_entities](http://developer.android.com/reference/android/provider/ContactsContract.RawContactsEntity.html)**
- * content://com.android.contacts/status_updates
- * **[content://com.android.contacts/groups](http://developer.android.com/reference/android/provider/ContactsContract.Groups.html)**
- * **[content://com.android.contacts/aggregation_exceptions](http://developer.android.com/reference/android/provider/ContactsContract.AggregationExceptions.html)**
- * content://com.android.contacts/photo_dimensions
+ - content://com.android.contacts/contacts
+ - content://com.android.contacts/directories
+ - content://com.android.contacts/deleted_contacts
+ - content://com.android.contacts/raw_contacts
+ - content://com.android.contacts/data
+ - content://com.android.contacts/data/phones
+ - content://com.android.contacts/raw_contact_entities
+ - content://com.android.contacts/status_updates
+ - content://com.android.contacts/groups
+ - content://com.android.contacts/aggregation_exceptions
+ - content://com.android.contacts/photo_dimensions
 
 #### Media
 
- * **[content://media/external/images/media](http://developer.android.com/reference/android/provider/MediaStore.Images.Media.html)**
- * **[content://media/external/images/thumbnails](http://developer.android.com/reference/android/provider/MediaStore.Images.Thumbnails.html)**
- * **[content://media/external/audio/media](http://developer.android.com/reference/android/provider/MediaStore.Audio.Media.html)**
- * **[content://media/external/audio/genres](http://developer.android.com/reference/android/provider/MediaStore.Audio.Genres.html)**
- * **[content://media/external/audio/playlists](http://developer.android.com/reference/android/provider/MediaStore.Audio.Playlists.html)**
- * **[content://media/external/audio/artists](http://developer.android.com/reference/android/provider/MediaStore.Audio.Artists.html)**
- * **[content://media/external/audio/albums](http://developer.android.com/reference/android/provider/MediaStore.Audio.Albums.html)**
- * **[content://media/external/video/media](http://developer.android.com/reference/android/provider/MediaStore.Video.Media.html)**
- * **[content://media/external/video/thumbnails](http://developer.android.com/reference/android/provider/MediaStore.Video.Thumbnails.html)**
+ - content://media/external/images/media
+ - content://media/external/images/thumbnails
+ - content://media/external/audio/media
+ - content://media/external/audio/genres
+ - content://media/external/audio/playlists
+ - content://media/external/audio/artists
+ - content://media/external/audio/albums
+ - content://media/external/video/media
+ - content://media/external/video/thumbnails
 
 > the `external` in the uri, you can also change to `internal`
 
 #### Settings
 
- * **[content://settings/system](http://developer.android.com/reference/android/provider/Settings.System.html)**
- * **[content://settings/secure](http://developer.android.com/reference/android/provider/Settings.Secure.html)**
- * **[content://settings/global](http://developer.android.com/reference/android/provider/Settings.Global.html)**
- * content://settings/bookmarks
+ - content://settings/system
+ - content://settings/secure
+ - content://settings/global
+ - content://settings/bookmarks
 
 #### Other
 
- * **[content://user_dictionary/words](http://developer.android.com/reference/android/provider/UserDictionary.Words.html)**
+ - content://user_dictionary/words
 
 ## Tested Environments (meanwhile)
 
