@@ -107,7 +107,7 @@ If you discover some new that work, add them here
 
  - content://user_dictionary/words
 
-## Tested Environments (meanwhile)
+## Tested Environments
 
 * MacOSX
 * Ubuntu 14.10 (Utopic). Run ```sudo apt-get install android-tools-adb``` first
