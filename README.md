@@ -3,7 +3,7 @@ Bash script that **exports** content provider's data to raw and CSV format. It c
 
 ## Getting started
 
-First, clone the repository using git (recommended):
+First, clone the repository using git:
 
 ``` bash
 git clone https://github.com/snatik/adb-export/
