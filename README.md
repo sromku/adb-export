@@ -1,5 +1,5 @@
-# adb-export
-Bash script that **exports** content provider's data to raw and CSV format. It can be your own content provider or any other content provider that isn't blocked with permissions.
+# ADB-Export
+Bash script that **exports** content provider's data to raw and CSV file format. It can be your own content provider or any other content provider that isn't blocked with permissions.
 
 ## Getting started
 
