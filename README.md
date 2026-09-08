@@ -14,6 +14,12 @@ Raw output:    ./exports/settings_global-20260907-221655/raw_query.txt
 CSV:           ./exports/settings_global-20260907-221655/data.csv
 ```
 
+## A short story
+
+This script was written in 2015, by hand, in an evening: a few hundred lines of bash that split `adb shell content query` output on commas and hoped for the best. It did its job for a while and then sat untouched for a decade while Android moved on.
+
+In 2026 it was revived together with an AI assistant. The parser was rewritten in awk, the edge cases got tests, every content URI was checked against a current emulator and a current phone, and the things that no longer exist were taken out. The idea is still the same one from 2015: point it at a content URI and get a CSV. It just breaks less now.
+
 ## Requirements
 
 * `adb` from the Android platform-tools. It is found on `PATH` or in the usual SDK locations (`$ANDROID_HOME`, `~/Library/Android/sdk`, `~/Android/Sdk`). You can also point to it with `ADB=/path/to/adb`.
