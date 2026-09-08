@@ -29,7 +29,7 @@ run() {
 	local rc=0
 	rm -rf "$WORK/out"
 	: > "$FAKE_ADB_LOG"
-	OUT=$(FAKE_ADB_FIXTURE="$FIXTURES/$fixture" bash "$SCRIPT" -o "$WORK/out" "$@" 2> "$WORK/stderr") || rc=$?
+	OUT=$(FAKE_ADB_FIXTURE="$FIXTURES/$fixture" bash "$SCRIPT" -o "$WORK/out" "$@" 2> "$WORK/stderr" </dev/null) || rc=$?
 	ERR=$(cat "$WORK/stderr")
 	EXPORT=$(find "$WORK/out" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)
 	if [ "$rc" -eq "$expected" ]; then
@@ -179,6 +179,27 @@ contains "unauthorized: message" "$ERR" "Accept the USB debugging prompt"
 
 FAKE_ADB_DEVICES='ABC123\tdevice' run "wrong serial" 1 basic.txt -s NOPE content://settings/global
 contains "wrong serial: message" "$ERR" "not connected"
+
+# pick_device is only used on a terminal; exercise it through a pseudo tty
+# when 'script' is available. The answer is typed after a short delay, as a
+# person would, because 'script' forwards a closed pipe as an immediate EOF.
+if command -v script >/dev/null 2>&1; then
+	PTY_OUT="$WORK/pty.txt"; rm -rf "$PTY_OUT" "$WORK/out"
+	export FAKE_ADB_FIXTURE="$FIXTURES/basic.txt" FAKE_ADB_DEVICES='AAA\tdevice model:Pixel\nBBB\tdevice model:Emu'
+	if [ "$(uname)" = Darwin ]; then
+		(sleep 1; printf '2\n'; sleep 1) | script -q "$PTY_OUT" bash "$SCRIPT" -o "$WORK/out" -q content://settings/global >/dev/null 2>&1 || true
+	else
+		(sleep 1; printf '2\n'; sleep 1) | script -q -c "bash '$SCRIPT' -o '$WORK/out' -q content://settings/global" "$PTY_OUT" >/dev/null 2>&1 || true
+	fi
+	unset FAKE_ADB_FIXTURE FAKE_ADB_DEVICES
+	if [ -s "$PTY_OUT" ]; then
+		contains "interactive pick: lists devices with models" "$(cat "$PTY_OUT")" "2) BBB"
+		contains "interactive pick: shows model" "$(cat "$PTY_OUT")" "Emu"
+		contains "interactive pick: asks" "$(cat "$PTY_OUT")" "Which one? [1-2]"
+		EXPORT=$(find "$WORK/out" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -1)
+		check "interactive pick: export produced with chosen device" [ -s "$EXPORT/data.csv" ]
+	fi
+fi
 
 # --------------------------------------------------------------- done ---
 

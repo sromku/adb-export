@@ -101,17 +101,17 @@ Examples:
 
 ## Choosing a device
 
-When one device is ready the script uses it. Offline and unauthorized devices are ignored, so a phone next to a couple of dead emulators still works without options. When several devices are ready you have to pick one:
+When one device is ready the script uses it. Offline and unauthorized devices are ignored, so a phone next to a couple of dead emulators still works without options. When several devices are ready and you are at a terminal, the script asks:
 
 ```
-$ ./adb-export.sh --probe
-adb-export: more than one device is ready, pick one with -s <serial>, e.g. -s 57221FDCH009VC:
-  57221FDCH009VC	device
-  emulator-5554	device
-$ ./adb-export.sh --probe -s emulator-5554
+$ ./adb-export.sh -c content://settings/global > ~/Desktop/global-settings.csv
+adb-export: more than one device is ready:
+  1) 57221FDCH009VC           Pixel_10_Pro
+  2) emulator-5554            sdk_gphone64_arm64
+Which one? [1-2] 1
 ```
 
-Setting `ANDROID_SERIAL` in your shell has the same effect as `-s` and saves repeating it.
+In a script or a pipeline with no terminal it fails instead and lists the devices, so pass `-s <serial>` there. Setting `ANDROID_SERIAL` in your shell has the same effect as `-s` and saves repeating it.
 
 ## Output
 

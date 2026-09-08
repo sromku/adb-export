@@ -155,9 +155,38 @@ ADB_BIN=$(find_adb)
 
 # --------------------------------------------------------- check device ---
 
-# Prints "<serial>\t<state>" for every device adb knows about.
+# Prints "<serial>\t<state>\t<model>" for every device adb knows about.
 list_devices() {
-	"$ADB_BIN" devices 2>/dev/null | awk 'NR > 1 && NF >= 2 && $1 !~ /^\*/ { print $1 "\t" $2 }'
+	"$ADB_BIN" devices -l 2>/dev/null | awk '
+		NR > 1 && NF >= 2 && $1 !~ /^\*/ {
+			model = ""
+			for (i = 3; i <= NF; i++) if ($i ~ /^model:/) model = substr($i, 7)
+			print $1 "\t" $2 "\t" model
+		}'
+}
+
+print_devices() {
+	printf '%s\n' "$1" | awk -F'\t' '{ printf "  %-24s %-13s %s\n", $1, $2, $3 }' >&2
+}
+
+# Lets the user pick one of the ready devices (serial\tstate\tmodel lines).
+# Prints the chosen serial.
+pick_device() {
+	local n=0 choice serial model
+	printf 'adb-export: more than one device is ready:\n' >&2
+	while IFS='	' read -r serial _ model; do
+		n=$((n + 1))
+		printf '  %d) %-24s %s\n' "$n" "$serial" "$model" >&2
+	done <<EOF
+$1
+EOF
+	printf 'Which one? [1-%d] ' "$n" >&2
+	read -r choice || die "no device chosen"
+	case "$choice" in
+		''|*[!0-9]*) die "not a number: $choice" ;;
+	esac
+	[ "$choice" -ge 1 ] && [ "$choice" -le "$n" ] || die "there is no device number $choice"
+	printf '%s\n' "$1" | sed -n "${choice}p" | cut -f1
 }
 
 check_device() {
@@ -172,7 +201,7 @@ check_device() {
 	if [ -z "$SERIAL" ]; then
 		# Only devices in the "device" state can be queried; ignore the
 		# offline and unauthorized ones when picking a default.
-		ready=$(printf '%s\n' "$devices" | awk -F'\t' '$2 == "device" { print $1 }')
+		ready=$(printf '%s\n' "$devices" | awk -F'\t' '$2 == "device"')
 		case $(printf '%s' "$ready" | grep -c . || true) in
 			0)
 				if [ "$count" -eq 1 ]; then
@@ -180,15 +209,19 @@ check_device() {
 					SERIAL=$(printf '%s' "$devices" | cut -f1)
 				else
 					printf 'adb-export: no device is ready (offline devices need a reconnect, unauthorized ones need the USB debugging prompt accepted):\n' >&2
-					printf '%s\n' "$devices" | sed 's/^/  /' >&2
+					print_devices "$devices"
 					exit 1
 				fi ;;
 			1)
-				SERIAL=$ready ;;
+				SERIAL=$(printf '%s' "$ready" | cut -f1) ;;
 			*)
-				printf 'adb-export: more than one device is ready, pick one with -s <serial>, e.g. -s %s:\n' "$(printf '%s\n' "$ready" | head -1)" >&2
-				printf '%s\n' "$devices" | sed 's/^/  /' >&2
-				exit 1 ;;
+				if [ -t 0 ] && [ -t 2 ]; then
+					SERIAL=$(pick_device "$ready")
+				else
+					printf 'adb-export: more than one device is ready, pick one with -s <serial>, e.g. -s %s:\n' "$(printf '%s\n' "$ready" | head -1 | cut -f1)" >&2
+					print_devices "$devices"
+					exit 1
+				fi ;;
 		esac
 	fi
 
