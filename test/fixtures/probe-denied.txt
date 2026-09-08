@@ -1,0 +1,3 @@
+Error while accessing provider:telephony
+java.lang.SecurityException: Access SIMINFO table from not phone/system UID
+	at android.os.Parcel.createExceptionOrNull(Parcel.java:3057)

@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# A stand-in for adb used by the test suite.
+#   FAKE_ADB_DEVICES  lines printed by 'adb devices' (default: one emulator)
+#   FAKE_ADB_FIXTURE  file whose content is returned by 'adb shell ...'
+#   FAKE_ADB_LOG      file the remote shell command is appended to
+set -eu
+if [ "${1:-}" = "devices" ]; then
+	echo "List of devices attached"
+	printf '%b\n' "${FAKE_ADB_DEVICES-emulator-5554\tdevice}"
+	echo
+	exit 0
+fi
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-s) shift 2 ;;
+		shell) shift; break ;;
+		*) shift ;;
+	esac
+done
+[ -z "${FAKE_ADB_LOG:-}" ] || printf '%s\n' "$*" >> "$FAKE_ADB_LOG"
+cat "$FAKE_ADB_FIXTURE"

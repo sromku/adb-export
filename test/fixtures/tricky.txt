@@ -1,0 +1,11 @@
+Row: 0 _id=1, name=plain, value=hello, note=NULL, data=BLOB
+Row: 1 _id=2, name=comma, value=a, b, c, note=x=y, data=BLOB
+Row: 2 _id=3, name=fake key, value=see, name=inside value, note=NULL, data=BLOB
+Row: 3 _id=4, name=multi
+line, value=line1
+line2
+line3, note=quote "here", data=BLOB
+Row: 4 _id=5, name=empty, value=, note=NULL, data=BLOB
+Row: 5 _id=6, name=unicode, value=héllo wörld ✓, note=NULL, data=BLOB
+Row: 6 _id=7, name=spaces , value= padded , note=NULL, data=BLOB
+Row: 7 _id=8, name=prose, value=Hi, dear friend=of mine, note=NULL, data=BLOB

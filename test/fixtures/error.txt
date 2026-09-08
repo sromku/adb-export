@@ -1,0 +1,4 @@
+Error while accessing provider:does.not.exist
+java.lang.IllegalStateException: Could not find provider: does.not.exist
+	at com.android.commands.content.Content$Command.execute(Content.java:519)
+	at com.android.commands.content.Content.main(Content.java:735)

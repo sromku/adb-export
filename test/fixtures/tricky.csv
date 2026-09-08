@@ -1,0 +1,12 @@
+_id,name,value,note,data
+1,plain,hello,NULL,BLOB
+2,comma,"a, b, c",x=y,BLOB
+3,fake key,"see, name=inside value",NULL,BLOB
+4,"multi
+line","line1
+line2
+line3","quote ""here""",BLOB
+5,empty,,NULL,BLOB
+6,unicode,héllo wörld ✓,NULL,BLOB
+7,spaces , padded ,NULL,BLOB
+8,prose,"Hi, dear friend=of mine",NULL,BLOB
