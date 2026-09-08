@@ -76,6 +76,13 @@ Examples:
 # export a provider to ./exports/<provider>-<timestamp>/data.csv
 ./adb-export.sh content://com.android.contacts/contacts
 
+# put the export folder somewhere else (the directory is created if needed)
+./adb-export.sh -o ~/Desktop content://com.android.calendar/events
+./adb-export.sh --out /tmp/phone-dump content://settings/global
+
+# write the CSV to a file of your choice, with no export folder at all
+./adb-export.sh -c content://settings/global > ~/Desktop/global-settings.csv
+
 # pick a device when several are connected
 ./adb-export.sh -s emulator-5554 content://settings/secure
 
@@ -112,6 +119,26 @@ By default every export creates a folder `exports/<provider>-<timestamp>/` in th
 
 * `raw_query.txt` - the untouched output of `adb shell content query`, useful when something looks off.
 * `data.csv` - the parsed data, one header line followed by one line per row.
+
+Pass `-o <dir>` to create that folder somewhere else, or `-c` to skip the folder and get the CSV on stdout. A full run looks like this:
+
+```
+$ ./adb-export.sh -o ~/Desktop content://settings/global
+
+Exporting content://settings/global from emulator-5554
+ - Columns (4): _id, name, value, is_preserved_in_restore
+
+Rows exported: 189
+Elapsed:       1s
+Raw output:    /Users/me/Desktop/settings_global-20260907-232348/raw_query.txt
+CSV:           /Users/me/Desktop/settings_global-20260907-232348/data.csv
+
+$ head -4 ~/Desktop/settings_global-20260907-232348/data.csv
+_id,name,value,is_preserved_in_restore
+166,carrier_app_names,com.google.android.apps.tycho:Google Fi,true
+115,adb_wifi_enabled,0,false
+2,airplane_mode_radios,"cell,bluetooth,uwb,wifi,wimax",false
+```
 
 The CSV follows RFC 4180: values containing commas, quotes or newlines are quoted, and quotes inside a value are doubled. Nothing is altered otherwise. `NULL` and `BLOB` appear literally because that is how the device prints null values and binary columns.
 
